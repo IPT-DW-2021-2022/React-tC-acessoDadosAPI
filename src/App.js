@@ -7,10 +7,15 @@ import Tabela from "./Tabela";
 
 /**
  * função para aceder à API e ler os dados dos Animais
- */
+ * Para ultrapassar a resistência do CORS,
+ * vamos criar um Proxy
+ * https://create-react-app.dev/docs/proxying-api-requests-in-development/
+ * Depois de se definir o proxy, é NECESSÁRIO REINICIAR o React!
+*/
 async function getAnimais() {
   // ler dados da API
-  let dados = await fetch("https://localhost:7181/api/animaisAPI/");
+  let dados = await fetch("api/animaisAPI/");
+  console.error(dados)
 
   // se não se conseguir ler os dados...
   if (!dados.ok) {
