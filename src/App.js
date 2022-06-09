@@ -4,6 +4,7 @@
 
 import React from "react";
 import Tabela from "./Tabela";
+import Formulario from "./Formulario";
 
 /**
  * função para aceder à API e ler os dados dos Animais
@@ -97,7 +98,7 @@ class App extends React.Component {
       <div className="container">
         <h1>Animais</h1>
         <h4>Adição de novo animal:</h4>
-        {/* <Formulario /> */}
+        <Formulario />
         <br />
 
         <h4>Animais:</h4>
