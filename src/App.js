@@ -15,7 +15,6 @@ import Tabela from "./Tabela";
 async function getAnimais() {
   // ler dados da API
   let dados = await fetch("api/animaisAPI/");
-  console.error(dados)
 
   // se não se conseguir ler os dados...
   if (!dados.ok) {
@@ -28,7 +27,30 @@ async function getAnimais() {
   return await dados.json();
 }
 
+/**
+ * função para remover um animal da base de dados, através da API
+ * @param {*} idAnimal 
+ */
+async function apagaAnimal(idAnimal){
 
+  let formData = new FormData();
+  formData.append("id", idAnimal);
+
+  let resposta = await fetch("api/AnimaisAPI/" + idAnimal,
+    {
+      method: "Delete",
+      body: formData
+    }
+  );
+  // validar a qualidade da resposta
+  if (!resposta.ok) {
+    console.error("resposta: ",resposta);
+    throw new Error("Não foi possível remover o animal. Código: ", resposta.status)
+  }
+  else {
+    alert("O animal foi bem apagado...");
+  } 
+}
 
 
 
@@ -60,6 +82,13 @@ class App extends React.Component {
   }
 
 
+  handleRemoveAnimal = async (idAnimal) => {
+    // invoca a remoção do Animal
+     apagaAnimal(idAnimal);
+    // atualizar os dados da Tabela
+    this.loadAnimais();
+  }
+
   render() {
     // ler os dados do state, para o Render os poder utilizar
     const { animais } = this.state;
@@ -72,7 +101,8 @@ class App extends React.Component {
         <br />
 
         <h4>Animais:</h4>
-        <Tabela dadosAnimaisIN={animais} />
+        <Tabela dadosAnimaisIN={animais}
+          idAnimalOUT={this.handleRemoveAnimal} />
         <br />
 
 

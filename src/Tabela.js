@@ -18,6 +18,7 @@ function Cabecalho() {
                 <th>Peso</th>
                 <th>Dono</th>
                 <th>Fotografia</th>
+                <th></th>
             </tr>
         </thead>
     )
@@ -40,6 +41,11 @@ const Corpo = (props) => {
                 <td>{row.peso}</td>
                 <td>{row.nomeDono}</td>
                 <td>{row.foto}</td>
+                <td>
+                <button className="btn btn-outline-danger"
+                        onClick={() => props.animalARemoverOUT(row.id)}
+                >Remover</button>
+                </td>
             </tr>
         )
     })
@@ -57,12 +63,13 @@ class Tabela extends Component {
         // ler os dados que são envidados
         // para dentro da componente
         // const dadosAlunosIN=this.props.dadosAlunosIN
-        const { dadosAnimaisIN } = this.props
+        const { dadosAnimaisIN, idAnimalOUT } = this.props
 
         return (
             <table className="table table-striped">
                 <Cabecalho />
-                <Corpo dadosRecebidosIN={dadosAnimaisIN} />
+                <Corpo dadosRecebidosIN={dadosAnimaisIN}
+                       animalARemoverOUT={idAnimalOUT} />
             </table>
         )
     }
