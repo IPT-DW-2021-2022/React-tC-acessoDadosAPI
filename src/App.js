@@ -23,7 +23,20 @@ async function getAnimais() {
     throw new Error("Não foi possível obter os dados dos Animais. Código: ",
       dados.status)
   }
+  // devolver os dados lidos
+  return await dados.json();
+}
 
+async function getDonos() {
+  // ler dados da API
+  let dados = await fetch("api/donosAPI/");
+
+  // se não se conseguir ler os dados...
+  if (!dados.ok) {
+    console.error(dados);
+    throw new Error("Não foi possível obter os dados dos Donos. Código: ",
+      dados.status)
+  }
   // devolver os dados lidos
   return await dados.json();
 }
@@ -32,7 +45,7 @@ async function getAnimais() {
  * função para remover um animal da base de dados, através da API
  * @param {*} idAnimal 
  */
-async function apagaAnimal(idAnimal){
+async function apagaAnimal(idAnimal) {
 
   let formData = new FormData();
   formData.append("id", idAnimal);
@@ -45,20 +58,21 @@ async function apagaAnimal(idAnimal){
   );
   // validar a qualidade da resposta
   if (!resposta.ok) {
-    console.error("resposta: ",resposta);
+    console.error("resposta: ", resposta);
     throw new Error("Não foi possível remover o animal. Código: ", resposta.status)
   }
   else {
     alert("O animal foi bem apagado...");
-  } 
+  }
 }
 
 
 
 class App extends React.Component {
-
+  // dados a serem manipulados dentro do componente
   state = {
     animais: [],
+    donos: [],
   }
 
   /**
@@ -68,6 +82,8 @@ class App extends React.Component {
   componentDidMount() {
     // vai ser dada ordem de carregamento dos dados dos Animais
     this.loadAnimais();
+    // e, dos donos
+    this.loadDonos();
   }
 
   /**
@@ -82,23 +98,34 @@ class App extends React.Component {
     }
   }
 
+/**
+   * Carregar os dados dos Donos da API
+   */
+ async loadDonos() {
+  try {
+    let donosDaAPI = await getDonos();
+    this.setState({ donos: donosDaAPI })
+  } catch (erro) {
+    console.error("Ocorreu um erro no acesso aos dados da API", erro);
+  }
+}
 
   handleRemoveAnimal = async (idAnimal) => {
     // invoca a remoção do Animal
-     apagaAnimal(idAnimal);
+    apagaAnimal(idAnimal);
     // atualizar os dados da Tabela
     this.loadAnimais();
   }
 
   render() {
     // ler os dados do state, para o Render os poder utilizar
-    const { animais } = this.state;
+    const { animais, donos } = this.state;
 
     return (
       <div className="container">
         <h1>Animais</h1>
         <h4>Adição de novo animal:</h4>
-        <Formulario />
+        <Formulario donosIN={donos} />
         <br />
 
         <h4>Animais:</h4>
