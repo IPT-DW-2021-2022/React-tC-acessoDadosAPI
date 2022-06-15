@@ -40,11 +40,16 @@ const Corpo = (props) => {
                 <td>{row.raca}</td>
                 <td>{row.peso}</td>
                 <td>{row.nomeDono}</td>
-                <td>{row.foto}</td>
                 <td>
-                <button className="btn btn-outline-danger"
+                    <img src={'Animais/' + row.foto}
+                         alt={'foto do/a ' + row.nome}
+                         title={row.nome}
+                         height="50" />
+                </td>
+                <td>
+                    <button className="btn btn-outline-danger"
                         onClick={() => props.animalARemoverOUT(row.id)}
-                >Remover</button>
+                    >Remover</button>
                 </td>
             </tr>
         )
