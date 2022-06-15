@@ -27,6 +27,10 @@ async function getAnimais() {
   return await dados.json();
 }
 
+/**
+ * Procura os dados dos donos dos animais, através da API
+ * @returns 
+ */
 async function getDonos() {
   // ler dados da API
   let dados = await fetch("api/donosAPI/");
@@ -66,6 +70,36 @@ async function apagaAnimal(idAnimal) {
   }
 }
 
+/**
+ * Adição dos dados do novo Animal para a API
+ * 
+ *  Submissão de dados para a API
+ *    https://developer.mozilla.org/pt-BR/docs/Web/API/FormData
+ *    https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
+ * @param {*} animal 
+ */
+async function adicionaAnimal(animal) {
+  //  preparar os objeto que transporta os dados para a API
+  let formData = new FormData();
+  formData.append("Nome", animal.Nome);
+  formData.append("Especie", animal.Especie);
+  formData.append("Raca", animal.Raca);
+  formData.append("Peso", animal.Peso);
+  formData.append("DonoFK", animal.DonoFK);
+  formData.append("fotoAnimal", animal.Foto);
+  // concretizar o transporte
+  let resposta = await fetch("api/AnimaisAPI",
+    {
+      method: "Post",
+      body: formData
+    }
+  );
+  // validar a qualidade da resposta
+  if (!resposta.ok) {
+    console.error("resposta: ", resposta);
+    throw new Error("Não foi possível adicionar o animal. Código: ", resposta.status)
+  }
+}
 
 
 class App extends React.Component {
@@ -81,15 +115,15 @@ class App extends React.Component {
    */
   componentDidMount() {
     // vai ser dada ordem de carregamento dos dados dos Animais
-    this.loadAnimais();
+    this.LoadAnimais();
     // e, dos donos
-    this.loadDonos();
+    this.LoadDonos();
   }
 
   /**
    * Carregar os dados dos Animais da API
    */
-  async loadAnimais() {
+  async LoadAnimais() {
     try {
       let animaisDaAPI = await getAnimais();
       this.setState({ animais: animaisDaAPI })
@@ -98,24 +132,51 @@ class App extends React.Component {
     }
   }
 
-/**
-   * Carregar os dados dos Donos da API
-   */
- async loadDonos() {
-  try {
-    let donosDaAPI = await getDonos();
-    this.setState({ donos: donosDaAPI })
-  } catch (erro) {
-    console.error("Ocorreu um erro no acesso aos dados da API", erro);
+  /**
+     * Carregar os dados dos Donos da API
+     */
+  async LoadDonos() {
+    try {
+      let donosDaAPI = await getDonos();
+      this.setState({ donos: donosDaAPI })
+    } catch (erro) {
+      console.error("Ocorreu um erro no acesso aos dados da API", erro);
+    }
   }
-}
 
+  /**
+   * envia a identificação dos dados do animal
+   * para eliminação na API
+   * @param {*} idAnimal 
+   */
   handleRemoveAnimal = async (idAnimal) => {
-    // invoca a remoção do Animal
-    apagaAnimal(idAnimal);
+    try {
+      // invoca a remoção do Animal
+      await apagaAnimal(idAnimal);
+    } catch (error) {
+      console.error("Ocorreu um erro na eliminação do Animal")
+    }
     // atualizar os dados da Tabela
-    this.loadAnimais();
+    await this.LoadAnimais();
   }
+
+  /**
+   * envia os dados do novo animal para a API
+   * @param {*} novoAnimal 
+   */
+  // public void handleAdicionaAnimal(Animal novoAnimal)
+  handleAdicionaAnimal = async (novoAnimal) => {
+    try {
+      // invoca a adição do Animal
+      await adicionaAnimal(novoAnimal);
+    } catch (error) {
+      console.error("Ocorreu um erro na adição do Animal")
+    }
+    // atualizar os dados da Tabela
+    await this.LoadAnimais();
+  }
+
+
 
   render() {
     // ler os dados do state, para o Render os poder utilizar
@@ -125,12 +186,11 @@ class App extends React.Component {
       <div className="container">
         <h1>Animais</h1>
         <h4>Adição de novo animal:</h4>
-        <Formulario donosIN={donos} />
+        <Formulario donosIN={donos} novoAnimalOUT={this.handleAdicionaAnimal} />
         <br />
 
         <h4>Animais:</h4>
-        <Tabela dadosAnimaisIN={animais}
-          idAnimalOUT={this.handleRemoveAnimal} />
+        <Tabela dadosAnimaisIN={animais} idAnimalOUT={this.handleRemoveAnimal} />
         <br />
 
 

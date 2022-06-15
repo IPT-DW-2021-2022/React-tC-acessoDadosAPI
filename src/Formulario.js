@@ -15,8 +15,8 @@ const EscolheDono = (props) => {
     })
     return (
         <select required
-                className="form-select"
-                onChange={props.donoEscolhidoOUT}>
+            className="form-select"
+            onChange={props.donoEscolhidoOUT}>
             <option value="">Selecione, por favor, um dono</option>
             {opcoes}
         </select>
@@ -59,9 +59,41 @@ class Formulario extends React.Component {
      * na dropdown
      * @param {*} evento 
      */
-    handleDonoChange=(evento)=>{
-        this.setState({idDonoFK:evento.target.value})
+    handleDonoChange = (evento) => {
+        this.setState({ idDonoFK: evento.target.value })
     }
+
+    /**
+     * preparar os dados recolhidos pelo formulário 
+     * para serem enviados para a API
+     * @param {*} evento 
+     */
+    handleSubmitForm = (evento) => {
+        // vamos começar por anular a ação
+        // pré-definida do formulário.
+        // Neste caso, não vai haver 'submit'
+        evento.preventDefault();
+
+        // preparar os dados para serem enviados para a API
+        let dadosForm = {
+            Nome: this.state.nomeAnimal,
+            Especie:this.state.especieAnimal,
+            Raca:this.state.racaAnimal,
+            Peso: this.state.pesoAnimal,
+            DonoFK: this.state.idDonoFK,
+            Foto: this.state.fotoAnimal,
+        }
+        // exportar os dados para fora do Formulário
+        this.props.novoAnimalOUT(dadosForm)
+        // limpar o formulario
+        this.setState({
+            nomeAnimal:"",
+            pesoAnimal:"",
+            especieAnimal:"",
+            racaAnimal:"",
+        })
+    }
+
 
     render() {
         // ler, dentro deste método, os dados do State e do Props
@@ -70,7 +102,10 @@ class Formulario extends React.Component {
         const { donosIN } = this.props;
 
         return (
-            <form>
+            <form method="Post"
+                encType="multipart/form-data"
+                onSubmit={this.handleSubmitForm}
+            >
                 <div className="row">
                     <div className="col-md-4">
                         Nome: <input type="text"
@@ -113,7 +148,7 @@ class Formulario extends React.Component {
                             - donoEscolhidoOUT: serve para retirar do componente, o ID do dono que o utilizador escolheu,
                             que será entregue ao 'handlerDonoChange' */}
                         Dono: <EscolheDono dadosDonosIN={donosIN}
-                                           donoEscolhidoOUT={this.handleDonoChange} />
+                            donoEscolhidoOUT={this.handleDonoChange} />
                         <br />
                     </div>
                 </div>
